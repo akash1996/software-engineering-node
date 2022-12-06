@@ -1,3 +1,4 @@
+
 export default class Tag {
-    private tag: string = '';
+   private tag: string = '';
 }

@@ -1,38 +1,33 @@
-/**
- * @file Implements an Express Node HTTP server.
- */
+
 import express, {Request, Response} from 'express';
-
 import UserController from "./controllers/UserController";
-
 import TuitController from "./controllers/TuitController";
+import mongoose from "mongoose";
 
-import UserDao from "./daos/UserDao";
+// connect to database
+const connectionString = `mongodb+srv://meet:meet1234@cluster0.zntvi.mongodb.net/myFirstDatabase?retryWrites=true`;
+mongoose.connect(connectionString);
 
-import TuitDao from "./daos/TuitDao";
+mongoose.connection.on("error", function(error) {
+  console.log(error)
+})
 
-const mongoose = require('mongoose');
+mongoose.connection.on("open", function() {
+  console.log("Connected to MongoDB Database")
+})
 
-mongoose.connect('mongodb+srv://sakash1996:abc123abc@cluster0.bhpvq4h.mongodb.net/tuiter?retryWrites=true&w=majority');
 
-const cors = require('cors');
 const app = express();
-app.use(cors());
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) =>
-    res.send('Welcome to Foundation of Software Engineering!!!!'));
+app.get('/hello', (req, res) =>
+res.send('Hello World!'));
 
-app.get('/hello', (req: Request, res: Response) =>
-    res.send('Welcome to Foundation of Software Engineering!'));
+app.get('/add/:a/:b', (req: Request, res: Response) =>
+    res.send(req.params.a + req.params.b));
 
-new UserController(app,new UserDao);
+const userController = UserController.getInstance(app);
+const tuitController = TuitController.getInstance(app);
 
-new TuitController(app,new TuitDao);
-
-/**
- * Start a server listening at port 4000 locally
- * but use environment variable PORT on Heroku if available.
- */
 const PORT = 4000;
 app.listen(process.env.PORT || PORT);
